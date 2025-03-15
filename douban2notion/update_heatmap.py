@@ -3,7 +3,7 @@ import glob
 import os
 import shutil
 import time
-from notion_helper import NotionHelper
+from douban2notion.notion_helper import NotionHelper
 
 def move_and_rename_file(type):
 
@@ -21,7 +21,8 @@ def move_and_rename_file(type):
     shutil.move(source_path, target_path)
     # 返回移动后的文件路径
     return target_path
-if __name__ == "__main__":
+    
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("type")
     options = parser.parse_args()
@@ -29,9 +30,11 @@ if __name__ == "__main__":
     notion_helper = NotionHelper(type)
     image_file = move_and_rename_file(type)
     if image_file:
-        image_url = f"https://raw.githubusercontent.com/{os.getenv('REPOSITORY')}/{os.getenv('REF').split('/')[-1]}/{image_file}"
+        image_url = f"https://raw.githubusercontent.com/{os.getenv('REPOSITORY')}/{os.getenv('REF').split('/')[-1]}/{image_file[2:]}"
         heatmap_url = f"https://heatmap.malinkang.com/?image={image_url}"
         if notion_helper.heatmap_block_id:
             response = notion_helper.update_heatmap(
                 block_id=notion_helper.heatmap_block_id, url=heatmap_url
             )
+if __name__ == "__main__":
+    main()
